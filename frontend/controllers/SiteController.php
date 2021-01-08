@@ -1,9 +1,13 @@
 <?php
+
 namespace frontend\controllers;
 
+use common\models\User;
+use common\services\NotificationService;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
+use yii\base\Event;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -14,6 +18,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\web\UserEvent;
 
 /**
  * Site controller
@@ -89,6 +94,8 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
+        $notificationService = new NotificationService();
+        Event::on(\yii\web\User::class, \yii\web\User::EVENT_AFTER_LOGIN, [$notificationService, 'emailUserLogin']);
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
@@ -107,8 +114,9 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
+        $notificationService = new NotificationService();
+        Event::on(\yii\web\User::class, \yii\web\User::EVENT_AFTER_LOGOUT, [$notificationService, 'emailUserLogout']);
         Yii::$app->user->logout();
-
         return $this->goHome();
     }
 
@@ -216,8 +224,8 @@ class SiteController extends Controller
      * Verify email address
      *
      * @param string $token
-     * @throws BadRequestHttpException
      * @return yii\web\Response
+     * @throws BadRequestHttpException
      */
     public function actionVerifyEmail($token)
     {
