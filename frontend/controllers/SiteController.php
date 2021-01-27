@@ -154,6 +154,16 @@ class SiteController extends Controller
     }
 
     /**
+     * Displays Dash player.
+     *
+     * @return mixed
+     */
+    public function actionDash()
+    {
+        return $this->render('dash');
+    }
+
+    /**
      * Signs user up.
      *
      * @return mixed
