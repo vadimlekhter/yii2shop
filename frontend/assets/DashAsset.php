@@ -16,7 +16,7 @@ class DashAsset extends AssetBundle
     ];
     public $js = [
         'js/dash.all.min.js',
-        'js/dash.js'
+//        'js/dash.js'
     ];
 //    public $jsOptions = ['position' => \yii\web\View::POS_READY];
     public $publishOptions = [
