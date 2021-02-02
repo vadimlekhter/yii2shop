@@ -21,12 +21,17 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property Task[] $createdTasks
+ * @property Task[] $updatedTasks
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+
+    const RELATION_CREATES_TASKS = 'createdTasks';
+    const RELATION_UPDATED_TASKS = 'updatedTasks';
 
 
     /**
@@ -208,5 +213,19 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedTasks () {
+        return $this->hasMany(Task::class, ['created_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedTasks () {
+        return $this->hasMany(Task::class, ['updated_by' => 'id']);
     }
 }
