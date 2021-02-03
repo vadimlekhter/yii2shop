@@ -37,10 +37,26 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['task'], 'string', 'required'],
+            [['task'], 'string'],
+            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['task'], 'required'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => $this->classUser, 'targetAttribute' => ['created_by' => 'id']],
-            [['created_at'], 'exist', 'skipOnError' => true, 'targetClass' => $this->classUser, 'targetAttribute' => ['updated_by' => 'id']],
-            [['created_at', 'updated_at'], 'integer', 'required'],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => $this->classUser, 'targetAttribute' => ['updated_by' => 'id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'task' => 'Title',
+            'created_by' => 'Creator ID',
+            'updated_by' => 'Updater ID',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -54,8 +70,8 @@ class Task extends ActiveRecord
             ],
             [
                 'class' => BlameableBehavior::class,
-                'createdByAttribute' => 'creator_id',
-                'updatedByAttribute' => 'updater_id'
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by'
             ]
         ];
     }
