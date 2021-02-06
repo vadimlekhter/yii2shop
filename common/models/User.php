@@ -63,6 +63,25 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($this->isNewRecord) {
+            $this->access_token = Yii::$app->security->generateRandomString();
+        }
+
+        if ($this->isAttributeChanged('password')) {
+            $this->password = Yii::$app->security->generatePasswordHash($this->password);
+        }
+
+        return true;
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -76,7 +95,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+//        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne(['access_token' => $token]);
     }
 
     /**

@@ -5,6 +5,10 @@ namespace frontend\modules\api\controllers;
 
 
 use common\models\Task;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\filters\Cors;
 
 class TaskController extends \yii\rest\ActiveController
@@ -16,7 +20,18 @@ class TaskController extends \yii\rest\ActiveController
         $behaviors = parent::behaviors();
 
         // remove authentication filter
-        $auth = $behaviors['authenticator'];
+
+        $auth = $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBasicAuth::class,
+                HttpBearerAuth::class,
+                QueryParamAuth::class,
+            ]
+        ];
+
+
+//        $auth = $behaviors['authenticator'];
         unset($behaviors['authenticator']);
 
         // add CORS filter
@@ -30,5 +45,12 @@ class TaskController extends \yii\rest\ActiveController
         $behaviors['authenticator']['except'] = ['options'];
 
         return $behaviors;
+    }
+
+    protected function verbs()
+    {
+        $verbs = parent::verbs();
+        $verbs['index'][] = 'OPTIONS'; //just add the 'POST' to "GET" and "HEAD"
+        return $verbs;
     }
 }

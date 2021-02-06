@@ -1,0 +1,9 @@
+GET http://frontend.vlekhter.ru/api/task/
+Accept: application/json
+
+
+###
+GET http://frontend.vlekhter.ru/api/task
+Accept: application/json
+Authorization: Basic LWtVSmdWWmV4UFRJSFFzMTNzMWJhX1pxaDhiZE5oYXk6
+
